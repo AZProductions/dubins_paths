@@ -83,6 +83,8 @@ pub extern crate glam;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "utoipa")]
+use utoipa::ToSchema;
 
 #[cfg(not(feature = "f64"))]
 mod float_type {
@@ -119,6 +121,7 @@ use std::error::Error;
 
 /// The three segment types in a Dubin's Path
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum SegmentType {
     /// Left-turning segment
@@ -146,6 +149,7 @@ impl SegmentType {
 
 /// All the possible path types
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Default)]
 pub enum PathType {
     #[default]
@@ -194,6 +198,7 @@ impl PathType {
 
 /// The error returned when a path is not found
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct NoPathError;
 
@@ -213,6 +218,7 @@ pub type Result<T> = result::Result<T, NoPathError>;
 /// The car's position and rotation in radians
 #[cfg(not(feature = "glam"))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PosRot([FloatType; 3]);
@@ -255,6 +261,7 @@ impl PosRot {
 /// The car's position and rotation in radians
 #[cfg(feature = "glam")]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PosRot(Vec2, FloatType);
 
@@ -336,6 +343,7 @@ pub type Params = [FloatType; 3];
 ///
 /// To construct this type, use [`Intermediate::new`]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Intermediate {
     alpha: FloatType,
@@ -554,6 +562,7 @@ pub fn mod2pi(theta: FloatType) -> FloatType {
 
 /// All the basic information about Dubin's Paths
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(ToSchema))]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct DubinsPath {
     /// The initial location (x, y, theta)
@@ -561,6 +570,7 @@ pub struct DubinsPath {
     /// The model's turn radius (forward velocity / angular velocity)
     pub rho: FloatType,
     /// The normalized lengths of the three segments
+    #[cfg_attr(feature = "utoipa", schema(value_type = [FloatType; 3]))]
     pub param: Params,
     /// The type of the path
     pub path_type: PathType,
