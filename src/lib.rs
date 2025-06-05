@@ -70,6 +70,7 @@
 //! ## Features
 //!
 //! * `glam` - Use a [`glam`] compatible API
+//! * `serde` - Enable serialization and deserialization of types using [`serde`]
 //!
 //! [`sample`]: DubinsPath::sample
 //! [`sample_many`]: DubinsPath::sample_many
@@ -79,6 +80,9 @@
 /// It requries the `glam` feature to be enabled in order to be used within this crate
 #[cfg(feature = "glam")]
 pub extern crate glam;
+
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 #[cfg(not(feature = "f64"))]
 mod float_type {
@@ -114,6 +118,7 @@ use core::{
 use std::error::Error;
 
 /// The three segment types in a Dubin's Path
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum SegmentType {
     /// Left-turning segment
@@ -140,6 +145,7 @@ impl SegmentType {
 }
 
 /// All the possible path types
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Default)]
 pub enum PathType {
     #[default]
@@ -187,6 +193,7 @@ impl PathType {
 }
 
 /// The error returned when a path is not found
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct NoPathError;
 
@@ -205,6 +212,7 @@ pub type Result<T> = result::Result<T, NoPathError>;
 
 /// The car's position and rotation in radians
 #[cfg(not(feature = "glam"))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PosRot([FloatType; 3]);
@@ -246,6 +254,7 @@ impl PosRot {
 
 /// The car's position and rotation in radians
 #[cfg(feature = "glam")]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PosRot(Vec2, FloatType);
 
@@ -326,6 +335,7 @@ pub type Params = [FloatType; 3];
 /// The pre-calculated information that applies to every path type
 ///
 /// To construct this type, use [`Intermediate::new`]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Intermediate {
     alpha: FloatType,
@@ -543,6 +553,7 @@ pub fn mod2pi(theta: FloatType) -> FloatType {
 }
 
 /// All the basic information about Dubin's Paths
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct DubinsPath {
     /// The initial location (x, y, theta)
